@@ -1,0 +1,50 @@
+---
+
+# Adapted from https://milliams.com/posts/2020/ansible-certificate-authority/
+
+# This generates a self signed CA for testing only
+
+- name: Create RSA private key
+  openssl_privatekey:
+    path: "/etc/ssl/private/self-signed-ca.pem"
+    size: 4096
+  register: ca_key
+
+- name: Create CA CSR - WARNING this is not safe for prod usage
+  openssl_csr:
+    path: /etc/ssl/private/self-signed-ca.csr
+    privatekey_path: "{{ ca_key.filename }}"
+    common_name: "self-signed csr"
+  register: ca_csr
+
+- name: Self Sign CA 
+  openssl_certificate:
+    path: /etc/ssl/private/self-signed-ca.crt
+    csr_path: "{{ ca_csr.filename }}"
+    privatekey_path: "{{ ca_key.filename }}"
+    provider: selfsigned
+  register: ca_crt
+
+# The following steps will apply to prod servers too
+- name: Create private key for host endpoint
+  openssl_privatekey:
+    path: "/etc/ssl/private/{{ harbor_hostname }}.pem"
+    size: 4096
+  register: host_priv_key
+
+- name: Create the CSR for host cert
+  openssl_csr:
+    path: "/etc/ssl/private/{{ harbor_hostname }}.csr"
+    privatekey_path: "{{ host_priv_key.filename }}"
+    common_name: "{{ harbor_hostname }}"
+  register: harbor_csr
+
+# This is only for testing as were self signing our own
+- name: Self sign CSR - WARNING this is not safe for prod usage
+  openssl_certificate:
+    path: /etc/ssl/private/{{ harbor_hostname }}.crt
+    csr_path: "{{ harbor_csr.filename }}"
+    provider: ownca
+    ownca_path: "{{ ca_crt.filename }}"
+    ownca_privatekey_path: "{{ ca_key.filename }}"
+  

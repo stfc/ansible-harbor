@@ -1,0 +1,44 @@
+---
+
+- name: Download harbor installer
+  get_url:
+    url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}/harbor-offline-installer-{{ harbor_version }}{{ item }}"
+    dest: "{{ harbor_unpack_dir }}{{ item }}"  # Prevent Ansible re-downloading 500Mb each time
+  with_items:
+    - ".tgz"
+    - ".tgz.asc"
+
+- name: Get Harbor GPG key
+  shell: "gpg --keyserver hkps://keyserver.ubuntu.com --receive-keys 644FF454C0B4115C"
+
+- name: Verify installer
+  shell: "gpg --verify {{ harbor_unpack_dir }}.tgz.asc {{ harbor_unpack_dir }}.tgz"
+
+- name: Add harbor service account
+  user:
+    name: harbor
+    create_home: no
+    groups: "docker"  # allow access to docker engine
+    shell: /bin/bash  # makes 'su harbor' much less painful for diagnostics
+
+- name: Create various dirs required
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /data
+    - "{{ harbor_unpack_dir }}"
+
+- name: Unarchive installer
+  unarchive:
+    src: "{{ harbor_unpack_dir }}.tgz"
+    dest: "{{ harbor_unpack_dir }}"
+    # Don't overwrite once we inject template
+    creates: "{{ harbor_unpack_dir }}/harbor.yml"
+    remote_src: yes  # already on remote machine
+
+- name: Configure template
+  template:
+    src: harbor.yml.tmpl.j2
+    dest: "{{ harbor_installer_dir }}/harbor.yml"
+

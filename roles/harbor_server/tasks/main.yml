@@ -1,3 +1,24 @@
----
+- name: Install docker packages
+  package: 
+    name: docker.io 
+    state: present 
+  become: yes
 
-- 
+# Docker compose is too old on Ubuntu 18.04, and there is no
+# PPA (for project political reasons) so we have to curl it...
+- name: Download latest docker-compose binary
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version}}/docker-compose-Linux-x86_64" 
+    dest: /usr/local/bin/docker-compose
+    mode: +x
+  become: yes
+
+# The following tasks require root
+- import_tasks : unpack.yml
+  become: yes
+
+- import_tasks: ssl.yml
+  become: yes
+
+- import_tasks: install.yml
+  become: yes
