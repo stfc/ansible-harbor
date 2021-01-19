@@ -1,0 +1,9 @@
+---
+
+  - hosts: harbor_test
+    vars:
+      ansible_ssh_user: ubuntu
+
+    tasks:
+    - import_tasks: basic_ubuntu_setup
+    - import_tasks: harbor_server

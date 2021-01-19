@@ -1,0 +1,10 @@
+---
+
+  - name: Update to latest packages on apt
+    apt: upgrade=dist force_apt_get=yes
+
+  - name: Install docker.io packages
+    package: name=docker.io state=present 
+  
+  - name: Install fail2ban
+    package: name=fail2ban state=present
