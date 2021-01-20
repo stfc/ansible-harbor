@@ -1,0 +1,56 @@
+---
+
+- name: Install python pip
+  package: name=python3-pip state=latest
+  become: yes
+
+- name: Install python SDKs
+  pip:
+    name:
+      - docker
+      - docker-compose
+      - setuptools
+    state: latest
+  become: yes
+
+- name: Create working dir
+  file:
+    state: directory
+    path: /opt/nginx
+  become: yes
+
+- name: Copy across certificate files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/ssl/private/{{ item }}"
+  with_items:
+    - fullchain.pem
+    - privkey.pem
+  become: yes
+
+- name: Configure nginx reverse proxy templates
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/nginx/{{ item }}"
+  with_items:
+    - docker-compose.yml
+    - nginx.conf
+    - ssl.conf
+  become: yes
+
+- name: Copy in config for registry
+  copy: src=cache-config.yml dest=/opt/nginx/cache-config.yml
+  become: yes
+
+- name: Get DH-Curve
+  # This is safe to do, as having a DH curve does not help you
+  # find the randomly selected point, as a by-product of forward secrecy
+  get_url:
+    url: https://ssl-config.mozilla.org/ffdhe2048.txt
+    dest: /etc/ssl/private/ffdhe2048.txt
+  become: yes
+
+- name: Run frontend service
+  docker_compose:
+    project_src: /opt/nginx
+  become: yes

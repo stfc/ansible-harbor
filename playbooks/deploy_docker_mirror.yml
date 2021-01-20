@@ -5,5 +5,6 @@
       ansible_ssh_user: ubuntu
 
     tasks:
-    - import_role: name=basic_ubuntu_setup
-    - import_role: name=harbor_server
+    # - import_role: name=basic_ubuntu_setup
+    # - import_role: name=harbor_server
+    - import_role: name=docker_cache

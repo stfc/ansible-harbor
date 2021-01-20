@@ -7,3 +7,7 @@
   - name: Install fail2ban
     package: name=fail2ban state=present
     become: yes
+
+  - name: Reboot instance
+    reboot:
+    become: yes

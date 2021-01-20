@@ -2,7 +2,7 @@
 
 - name: Download harbor installer
   get_url:
-    url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}/harbor-offline-installer-{{ harbor_version }}{{ item }}"
+    url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}/harbor-online-installer-{{ harbor_version }}{{ item }}"
     dest: "{{ harbor_unpack_dir }}{{ item }}"  # Prevent Ansible re-downloading 500Mb each time
   with_items:
     - ".tgz"
