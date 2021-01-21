@@ -1,10 +1,16 @@
 ---
-
-  - hosts: harbor_test
+  - hosts: harbor_docker_hub_cache
     vars:
       ansible_ssh_user: ubuntu
 
     tasks:
-    # - import_role: name=basic_ubuntu_setup
-    # - import_role: name=harbor_server
+    - import_role: name=basic_ubuntu_setup
+      become: yes
+    # Since we need a frontend for harbor provided by the docker_cache layer
+    # these are in the same playbook
+    
     - import_role: name=docker_cache
+      become: yes
+
+    - import_role: name=harbor_server
+      become: yes

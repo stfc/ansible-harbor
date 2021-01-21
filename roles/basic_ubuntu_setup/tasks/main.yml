@@ -2,12 +2,9 @@
 
   - name: Update to latest packages on apt
     apt: upgrade=dist force_apt_get=yes
-    become: yes
   
   - name: Install fail2ban
     package: name=fail2ban state=present
-    become: yes
 
   - name: Reboot instance
     reboot:
-    become: yes

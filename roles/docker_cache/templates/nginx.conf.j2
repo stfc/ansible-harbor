@@ -26,7 +26,9 @@ http {
     sendfile        on;
     tcp_nopush     on;  # wait to fill MTU
     keepalive_timeout  65;
-    gzip  on;
+    gzip  off;  # This will only run internally so bandwidth is "unlimited"
+    client_body_buffer_size     10M;
+    client_max_body_size        10M;
 
     server {
         # Redirect all to HTTPS
@@ -58,7 +60,7 @@ http {
     server {
         listen 443 ssl;
         listen [::]:443 ssl;
-        server_name _;  # Redirect anything else to harbor
+        server_name {{ harbor_hostname }};
         access_log {{ harbor_hostname }}.log;
 
         # Redirect to harbor on host machine
