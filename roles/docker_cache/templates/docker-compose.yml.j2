@@ -21,3 +21,8 @@ services:
       - 5000
     volumes:
       - "/opt/nginx/cache-config.yml:/etc/docker/registry/config.yml"
+    environment:
+      - REGISTRY_PROXY_REMOTEURL="https://registry-1.docker.io"
+    env_file:
+      # This file needs: `REGISTRY_PROXY_USERNAME` and `REGISTRY_PROXY_PASSWORD`
+      - docker-mirror.env
