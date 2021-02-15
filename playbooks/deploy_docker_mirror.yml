@@ -1,7 +1,6 @@
 ---
-- hosts: harbor_docker_hub_cache
+- hosts: all
   vars:
-    ansible_ssh_user: ubuntu
     docker_compose_version: "1.27.4"
     harbor_version: "v2.1.3"
 
