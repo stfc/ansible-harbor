@@ -32,8 +32,9 @@ Preparing to Deploy
 - In `roles/harbor_server/defaults` copy `secrets.yml.template` to `secrets.yml` and fill in as appropriate
 - In `playbooks/deploy_docker_mirror`, check the planned instance name and variables associated
 - Ensure that `defaults/main.yml` for the docker mirror role match the harbor role
-- If you want a volume for Harbor mount `/data` using `/etc/fstab` before deploying
+- If you want a volume for Harbor mount `/harbor_data` using `/etc/fstab` before deploying
 - Decide if SSL termination will be done upstream and set the var in the playbook as appropriate.
+- If you are using a docker hub token, create a file at `/opt/nginx/docker-mirror.env` with `REGISTRY_PROXY_USERNAME` set to the username and `REGISTRY_PROXY_PASSWORD` set to the access token.
 
 With Host SSL
 -------------

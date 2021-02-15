@@ -1,10 +1,17 @@
 ---
+- name: Add docker repository # as upstream is too old on SL7
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
 - name: Install required packages
-  package:
+  yum: # or apt
     name:
-      - docker.io
-      - python3-pip
-    state: latest
+      - "docker-ce"
+      - "docker-ce-cli"
+      - "containerd.io"
+      - "python-pip"
+    state: present
 
 # Docker compose is too old on Ubuntu 18.04, and there is no
 # PPA (for project political reasons) so we have to curl it...
@@ -13,6 +20,13 @@
     url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version}}/docker-compose-Linux-x86_64"
     dest: /usr/local/bin/docker-compose
     mode: +x
+
+# We need to update pip on the host as 8.0 (SL7 default) is too old
+- name: Pip Update
+  pip:
+    name: pip
+    version: 20.3.4 # 21 >= has no support for Python 2
+    state: present
 
 - name: Install python SDKs
   pip:
@@ -44,7 +58,7 @@
     - docker-compose.yml
     - nginx.conf
 
-- name: Configure nginx reverse proxy templates
+- name: Configure nginx SSL
   template:
     src: "{{ item }}.j2"
     dest: "/opt/nginx/{{ item }}"
@@ -53,7 +67,9 @@
   when: host_ssl_termination == true
 
 - name: Copy in config for registry
-  copy: src=cache-config.yml dest=/opt/nginx/cache-config.yml
+  copy:
+    src: cache-config.yml
+    dest: /opt/nginx/cache-config.yml
 
 - name: Get DH-Curve
   # This is safe to do, as having a DH curve does not help you
@@ -62,6 +78,11 @@
     url: https://ssl-config.mozilla.org/ffdhe2048.txt
     dest: /etc/ssl/private/ffdhe2048.txt
   when: host_ssl_termination == true
+
+- name: Ensure /etc/docker exists on new install
+  file:
+    path: /etc/docker
+    state: directory
 
 - name: Set local machine to use configured mirror
   template:
