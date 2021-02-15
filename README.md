@@ -11,7 +11,9 @@ These are served via two configurable domain names, such as `docker.example.com`
 Requirements
 ============
 
-The requirements for the instance are fairly low, requiring simply 1 core and 2GB RAM at a minimum. Disk requirements will vary depending on the number of images cached. 
+Python3 on the host is strongly recommended, as Ansible with Python 2 is deprecated and could break at any point.
+
+Hardware requirements for the instance are fairly low, requiring simply 1 core and 2GB RAM at a minimum. Disk requirements will vary depending on the number of images cached. 
 
 In testing mirroring all components for a Magnum cluster deployment required 30-70GB depending on mirrored version granularity.
 
