@@ -2,6 +2,14 @@
 - hosts: harbor_docker_hub_cache
   vars:
     ansible_ssh_user: ubuntu
+    docker_compose_version: "1.27.4"
+    harbor_version: "v2.1.3"
+
+    mirror_hostname: "docker-mirror.davidsnet.work"
+    harbor_hostname: "harbor.davidsnet.work"
+
+    # Enable if deploying SSL certificates to host, otherwise disable
+    host_ssl_termination: false
 
   tasks:
     # - import_role: name=basic_ubuntu_setup
