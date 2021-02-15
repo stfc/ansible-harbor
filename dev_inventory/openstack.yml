@@ -4,5 +4,5 @@ private: yes  # Always use internal networks instead of Floating
 only_clouds: 
   - jupyter-development
 
-compose:  # Allows us to dynamically select the cloud in the task
-  cloud_name_var: "jupyter-development"
+groups:
+  docker_cache: inventory_hostname.starts_with('docker_cache')

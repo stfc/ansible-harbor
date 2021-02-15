@@ -1,0 +1,11 @@
+- name: Create a link to running version
+  file:
+    src: "{{ harbor_installer_dir }}"
+    dest: /opt/harbor
+    state: link
+
+- name: Run prepare script to bootstrap images required
+  command: "bash /opt/harbor/prepare"
+
+- name: Install
+  command: "bash /opt/harbor/install.sh"
