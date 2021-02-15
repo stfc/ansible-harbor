@@ -16,6 +16,8 @@ Configuring Remote Env
 - If you have changed the instance name, in `playbooks/deploy_docker_mirror` change the hostname
 - Check the values inside the .yml file and create an instance manually with the same name 
 
+- Create a volume and mount using `/etc/fstab` to `/data`
+
 - Issue a certificate to the harbor hostname and the docker mirror
 - Copy .pem files to `roles/docker_cache/files` as per the instructions inside
 - Ensure that `defaults/main.yml` for the docker mirror role match the harbor role

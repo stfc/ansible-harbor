@@ -21,8 +21,6 @@ http {
 
     access_log  /var/log/nginx/access.log  main;
 
-    include /etc/nginx/ssl.conf;
-
     sendfile        on;
     tcp_nopush     on;  # wait to fill MTU
     keepalive_timeout  65;
@@ -30,8 +28,10 @@ http {
     client_body_buffer_size     10M;
     client_max_body_size        10M;
 
+    {% if host_ssl_termination %}
+    include /etc/nginx/ssl.conf;
     server {
-        # Redirect all to HTTPS
+        # Redirect all to HTTPS if SSL Termination is happening on host
         listen 80 default_server;
         listen [::]:80;
 
@@ -39,10 +39,18 @@ http {
 
         return 301 https://$host$request_uri;
     }
+    {% endif %}
 
     server {
+        # Use 443 or 80 depending on if SSL Termination happens on host
+        {% if host_ssl_termination %}
         listen 443 ssl;
         listen [::]:443 ssl;
+        {% else %}
+        listen 80;
+        listen [::]:80;
+        {% endif %}
+
         server_name {{ mirror_hostname }};
         access_log {{ mirror_hostname }}.log;
 
@@ -58,14 +66,21 @@ http {
     }
 
     server {
+        # Use 443 or 80 depending on if SSL Termination happens on host
+        {% if host_ssl_termination %}
         listen 443 ssl;
         listen [::]:443 ssl;
+        {% else %}
+        listen 80;
+        listen [::]:80;
+        {% endif %}
+
         server_name {{ harbor_hostname }};
         access_log {{ harbor_hostname }}.log;
 
         # Redirect to harbor on host machine
         location / {
-            proxy_pass https://172.17.0.1:4443;
+            proxy_pass http://172.17.0.1:8080;
         }
     }
 }

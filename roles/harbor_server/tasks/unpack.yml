@@ -14,13 +14,6 @@
 - name: Verify installer
   shell: "gpg --verify {{ harbor_unpack_dir }}.tgz.asc {{ harbor_unpack_dir }}.tgz"
 
-- name: Add harbor service account
-  user:
-    name: harbor
-    create_home: no
-    groups: "docker"  # allow access to docker engine
-    shell: /bin/bash  # makes 'su harbor' much less painful for diagnostics
-
 - name: Create various dirs required
   file:
     path: "{{ item }}"

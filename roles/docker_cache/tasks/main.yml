@@ -1,17 +1,16 @@
 ---
-
 - name: Install required packages
-  package: 
-    name: 
-      - docker.io 
+  package:
+    name:
+      - docker.io
       - python3-pip
-    state: latest 
+    state: latest
 
 # Docker compose is too old on Ubuntu 18.04, and there is no
 # PPA (for project political reasons) so we have to curl it...
 - name: Download latest docker-compose binary
   get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version}}/docker-compose-Linux-x86_64" 
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version}}/docker-compose-Linux-x86_64"
     dest: /usr/local/bin/docker-compose
     mode: +x
 
@@ -35,6 +34,7 @@
   with_items:
     - fullchain.pem
     - privkey.pem
+  when: host_ssl_termination == true
 
 - name: Configure nginx reverse proxy templates
   template:
@@ -43,7 +43,14 @@
   with_items:
     - docker-compose.yml
     - nginx.conf
+
+- name: Configure nginx reverse proxy templates
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/nginx/{{ item }}"
+  with_items:
     - ssl.conf
+  when: host_ssl_termination == true
 
 - name: Copy in config for registry
   copy: src=cache-config.yml dest=/opt/nginx/cache-config.yml
@@ -54,6 +61,7 @@
   get_url:
     url: https://ssl-config.mozilla.org/ffdhe2048.txt
     dest: /etc/ssl/private/ffdhe2048.txt
+  when: host_ssl_termination == true
 
 - name: Set local machine to use configured mirror
   template:

@@ -9,13 +9,15 @@ http:
   # port for http, default is 80. If https enabled, this port will redirect to https port
   port: 8080
 
-# https related config
+{% if host_ssl_termination %}
+# https related config - endpoint does reverse proxy
 https:
   # https port for harbor, default is 443
   port: 4443
   # The path of cert and key files for nginx
   certificate: "/etc/ssl/private/fullchain.pem"
   private_key: "/etc/ssl/private/privkey.pem"
+{% endif %}
 
 # # Uncomment following will enable tls communication between all harbor components
 # internal_tls:
