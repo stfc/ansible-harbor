@@ -11,7 +11,14 @@
       - "docker-ce-cli"
       - "containerd.io"
       - "python-pip"
+      - "patch" # For workaround described below
     state: present
+
+- name: Ensure docker is enabled as a startup service
+  systemd:
+    name: docker
+    enabled: yes
+    masked: no
 
 # Docker compose is too old on Ubuntu 18.04, and there is no
 # PPA (for project political reasons) so we have to curl it...
@@ -89,11 +96,32 @@
     src: docker-daemon.json.j2
     dest: /etc/docker/daemon.json
 
-- name: Restart docker service
+- name: Restart docker service to use configured mirror
   service:
     name: docker
     state: restarted
 
-- name: Run frontend service
+- name: Stop frontend service
   docker_compose:
     project_src: /opt/nginx
+    state: present
+    stopped: yes
+
+- name: Install systemd unit
+  copy:
+    src: docker-compose.service
+    dest: /etc/systemd/system/docker-compose@nginx.service
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Load nginx unit into systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Start and enable nginx unit using systemd
+  systemd:
+    name: docker-compose@nginx
+    state: restarted
+    enabled: yes
+    masked: no

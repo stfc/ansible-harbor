@@ -8,6 +8,8 @@ hostname: "{{ harbor_hostname }}"
 http:
   # port for http, default is 80. If https enabled, this port will redirect to https port
   port: 8080
+  # Set the internal nginx server to use relative URLs as were behind SSL termination
+  relativeurls: true
 
 {% if host_ssl_termination %}
 # https related config - endpoint does reverse proxy

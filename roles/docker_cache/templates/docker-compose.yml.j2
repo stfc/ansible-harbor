@@ -13,6 +13,7 @@ services:
       - "/opt/nginx/ssl.conf:/etc/nginx/ssl.conf:ro"
       - "/etc/ssl/private:/etc/ssl/private:ro"
     logging:
+      options:
         max-size: "200k"
         max-file: "10"
 
@@ -31,6 +32,7 @@ services:
       # This file needs: `REGISTRY_PROXY_USERNAME` and `REGISTRY_PROXY_PASSWORD`
       - docker-mirror.env
     logging:
+      options:
         max-size: "200k"
         max-file: "10"
 
