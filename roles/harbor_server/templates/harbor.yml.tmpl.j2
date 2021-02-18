@@ -8,6 +8,8 @@ hostname: "{{ harbor_hostname }}"
 http:
   # port for http, default is 80. If https enabled, this port will redirect to https port
   port: 8080
+  # Set the internal nginx server to use relative URLs as were behind SSL termination
+  relativeurls: true
 
 {% if host_ssl_termination %}
 # https related config - endpoint does reverse proxy
@@ -46,7 +48,7 @@ database:
   max_open_conns: 1000
 
 # The default data volume
-data_volume: /data
+data_volume: /harbor_data
 
 # Harbor Storage settings by default is using /data dir on local filesystem
 # Uncomment storage_service setting If you want to using external storage

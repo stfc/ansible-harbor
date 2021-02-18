@@ -11,7 +11,9 @@ These are served via two configurable domain names, such as `docker.example.com`
 Requirements
 ============
 
-The requirements for the instance are fairly low, requiring simply 1 core and 2GB RAM at a minimum. Disk requirements will vary depending on the number of images cached. 
+Python3 on the host is strongly recommended, as Ansible with Python 2 is deprecated and could break at any point.
+
+Hardware requirements for the instance are fairly low, requiring simply 1 core and 2GB RAM at a minimum. Disk requirements will vary depending on the number of images cached. 
 
 In testing mirroring all components for a Magnum cluster deployment required 30-70GB depending on mirrored version granularity.
 
@@ -30,8 +32,9 @@ Preparing to Deploy
 - In `roles/harbor_server/defaults` copy `secrets.yml.template` to `secrets.yml` and fill in as appropriate
 - In `playbooks/deploy_docker_mirror`, check the planned instance name and variables associated
 - Ensure that `defaults/main.yml` for the docker mirror role match the harbor role
-- If you want a volume for Harbor mount `/data` using `/etc/fstab` before deploying
+- If you want a volume for Harbor mount `/harbor_data` using `/etc/fstab` before deploying
 - Decide if SSL termination will be done upstream and set the var in the playbook as appropriate.
+- If you are using a docker hub token, create a file at `/opt/nginx/docker-mirror.env` with `REGISTRY_PROXY_USERNAME` set to the username and `REGISTRY_PROXY_PASSWORD` set to the access token.
 
 With Host SSL
 -------------

@@ -1,0 +1,5 @@
+all:
+  hosts:
+    sn1.nubes.rl.ac.uk:
+      ansible_user: root
+      ansible_python_interpreter: python2

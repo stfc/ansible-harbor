@@ -1,10 +1,24 @@
 ---
+- name: Add docker repository # as upstream is too old on SL7
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
 - name: Install required packages
-  package:
+  yum: # or apt
     name:
-      - docker.io
-      - python3-pip
-    state: latest
+      - "docker-ce"
+      - "docker-ce-cli"
+      - "containerd.io"
+      - "python-pip"
+      - "patch" # For workaround described below
+    state: present
+
+- name: Ensure docker is enabled as a startup service
+  systemd:
+    name: docker
+    enabled: yes
+    masked: no
 
 # Docker compose is too old on Ubuntu 18.04, and there is no
 # PPA (for project political reasons) so we have to curl it...
@@ -13,6 +27,13 @@
     url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version}}/docker-compose-Linux-x86_64"
     dest: /usr/local/bin/docker-compose
     mode: +x
+
+# We need to update pip on the host as 8.0 (SL7 default) is too old
+- name: Pip Update
+  pip:
+    name: pip
+    version: 20.3.4 # 21 >= has no support for Python 2
+    state: present
 
 - name: Install python SDKs
   pip:
@@ -44,7 +65,7 @@
     - docker-compose.yml
     - nginx.conf
 
-- name: Configure nginx reverse proxy templates
+- name: Configure nginx SSL
   template:
     src: "{{ item }}.j2"
     dest: "/opt/nginx/{{ item }}"
@@ -53,7 +74,9 @@
   when: host_ssl_termination == true
 
 - name: Copy in config for registry
-  copy: src=cache-config.yml dest=/opt/nginx/cache-config.yml
+  copy:
+    src: cache-config.yml
+    dest: /opt/nginx/cache-config.yml
 
 - name: Get DH-Curve
   # This is safe to do, as having a DH curve does not help you
@@ -63,16 +86,42 @@
     dest: /etc/ssl/private/ffdhe2048.txt
   when: host_ssl_termination == true
 
+- name: Ensure /etc/docker exists on new install
+  file:
+    path: /etc/docker
+    state: directory
+
 - name: Set local machine to use configured mirror
   template:
     src: docker-daemon.json.j2
     dest: /etc/docker/daemon.json
 
-- name: Restart docker service
+- name: Restart docker service to use configured mirror
   service:
     name: docker
     state: restarted
 
-- name: Run frontend service
+- name: Stop frontend service
   docker_compose:
     project_src: /opt/nginx
+    state: present
+    stopped: yes
+
+- name: Install systemd unit
+  copy:
+    src: docker-compose.service
+    dest: /etc/systemd/system/docker-compose@nginx.service
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Load nginx unit into systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Start and enable nginx unit using systemd
+  systemd:
+    name: docker-compose@nginx
+    state: restarted
+    enabled: yes
+    masked: no

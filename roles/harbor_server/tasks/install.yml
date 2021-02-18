@@ -8,4 +8,38 @@
   command: "bash /opt/harbor/prepare"
 
 - name: Install
-  command: "bash /opt/harbor/install.sh"
+  # Where trivy and clair are CVE scanners
+  command: "bash /opt/harbor/install.sh --with-trivy --with-clair --with-chartmuseum"
+
+# Currently the install has no way to specify http.relativeurls so will reset it
+# if this stops working check https://github.com/goharbor/harbor/issues/12135
+# has been merged, as we might have an official fix from upstream
+- name: Apply patch to work-around unknown blobs
+  patch:
+    src: fix_unknown_blob.patch
+    dest: /opt/harbor/common/config/registry/config.yml
+
+- name: Stop Harbor to migrate to Systemd module
+  community.general.docker_compose:
+    project_src: /opt/harbor
+    state: present
+    stopped: yes
+
+- name: Install systemd unit
+  copy:
+    src: docker-compose.service
+    dest: /etc/systemd/system/docker-compose@harbor.service
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Load harbor unit into systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Start harbor unit using systemd
+  systemd:
+    state: restarted
+    name: docker-compose@harbor
+    enabled: yes
+    masked: no
