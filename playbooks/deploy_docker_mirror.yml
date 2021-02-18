@@ -22,3 +22,6 @@
 
     - import_role: name=harbor_server
       become: yes
+
+    - import_role: name=monitoring
+      become: yes

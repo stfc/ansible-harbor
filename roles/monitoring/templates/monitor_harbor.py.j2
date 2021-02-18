@@ -1,0 +1,12 @@
+#!/bin/python
+from __future__ import division, print_function, absolute_import  # Ensure we stay Python 3 compat
+import monitor_common
+
+HEALTH_ENDPOINT = "https://{{ harbor_hostname }}/api/v2.0/health"
+EXPECTED_RESULT = u'healthy'  # Python 2 needs unicode, python 3 can omit this prefix
+
+
+result = monitor_common.get_json_from_endpoint(HEALTH_ENDPOINT)
+if isinstance(result, dict):  # We should get a dict back
+    result = result.get(u"status", None)  # Get status key which shows all sub-endpoints as one status
+monitor_common.exit_with_endpoint_status(result=result, expected_result=EXPECTED_RESULT)

@@ -1,0 +1,10 @@
+#!/bin/python
+from __future__ import division, print_function, absolute_import  # Ensure we stay Python 3 compat
+import monitor_common
+
+HEALTH_ENDPOINT = "https://{{ mirror_hostname }}/v2/"
+EXPECTED_RESULT = {}  # Will return an empty dict if everything is fine
+
+
+result = monitor_common.get_json_from_endpoint(HEALTH_ENDPOINT)
+monitor_common.exit_with_endpoint_status(result=result, expected_result=EXPECTED_RESULT)
