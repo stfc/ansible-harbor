@@ -1,0 +1,13 @@
+- name: Install common monitoring components
+  copy:
+    src: monitor_common.py
+    dest: /usr/local/bin/monitor_common.py
+
+- name: Install monitoring scripts for endpoints
+  template:
+    src: "{{ item }}.j2"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: "+x"
+  with_items:
+    - monitor_dockerhub.py
+    - monitor_harbor.py
