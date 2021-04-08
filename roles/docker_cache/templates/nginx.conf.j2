@@ -23,7 +23,7 @@ http {
 
     keepalive_timeout  65;
     client_max_body_size        0;  # Allow unlimited upload size
-    
+
     # Large file optimisations
     client_body_buffer_size     50M;  # Anything < 50MB can be served from memory
     gzip  off;  # This will only run internally so bandwidth is "unlimited"
@@ -52,6 +52,13 @@ http {
         listen 80;
         listen [::]:80;
         {% endif %}
+
+        # Only allow access on STFC and private addresses
+        allow 130.246.0.0/16;
+        allow 172.16.0.0/12;
+        allow 192.168.0.0/16
+        allow 10.0.0.0/8;
+        deny all;
 
         server_name {{ mirror_hostname }};
         access_log {{ mirror_hostname }}.log;
