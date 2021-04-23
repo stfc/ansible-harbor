@@ -19,17 +19,10 @@ In testing mirroring all components for a Magnum cluster deployment required 30-
 
 Naturally these requirements will scale with the number of users: in testing a single user doing a docker pull over LAN will consume 1 CPU for TCP handling. Thus, for 10 concurrent pulls 12+ cores will be required (to allow for various host overheads).
 
-Configuring Local Environment
-=============================
-
-- Activate .venv if present then install pip deps: `pip3 install ansible openstacksdk`
-- Obtain a copy of clouds.yaml for your project, place it in `~/.configs/openstack/clouds.yaml` and rename `openstack` to `jupyter-development`
-- Test using `openstack --os-cloud=jupyter-development coe cluster template list`, which will always return built-in templates
-
 Preparing to Deploy
 ===================
 
-- In `roles/harbor_server/defaults` copy `secrets.yml.template` to `secrets.yml` and fill in as appropriate
+- In `roles/harbor_server/defaults/main` copy `secrets.yml.template` to `secrets.yml` and fill in as appropriate
 - In `playbooks/deploy_docker_mirror`, check the planned instance name and variables associated
 - Ensure that `defaults/main.yml` for the docker mirror role match the harbor role
 - If you want a volume for Harbor mount `/harbor_data` using `/etc/fstab` before deploying
