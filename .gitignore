@@ -1,3 +1,5 @@
-*secrets.yml
-*.pem
-.idea/
+venv/
+
+log
+
+patch
