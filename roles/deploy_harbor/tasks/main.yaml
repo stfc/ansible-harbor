@@ -1,4 +1,3 @@
-
 # - name: Create Secret for Redis
 #   kubernetes.core.k8s:
 #     state: present
@@ -39,9 +38,3 @@
     release_namespace: "{{ harbor_namespace }}"
     values_files:
       - "/tmp/config.yaml"
-      
-
-
-
-
-  

@@ -14,7 +14,7 @@ Requirements
 
 - Kubernetes cluster 1.10+ (can use Cluster API)
 - Helm 2.8.0+
-- High available ingress controller
+- Loadbalancers for Longhorn, Postgres, Kubernetes cluster and Harbor service
 - High available PostgreSQL database
 - High available Redis (Redis Sentinel) 
 - PVC that can be shared across nodes or external object storage
@@ -41,10 +41,6 @@ Preparing to Deploy
 
 With Host SSL
 -------------
-
-If you are planning on handling SSL termination on the server you must do the following too:
-- Issue a certificate to the harbor hostname and the docker mirror
-- Copy .pem files to `roles/docker_cache/files` as per the instructions inside. By default these are in .gitignore
 - Create TLS secret (chage order of the chain if certifications are from Digital Infrastructure)
 `kubectl create secret tls secret-tls --cert test.harbor.stfc.ac.uk.crt --key test.harbor.stfc.ac.uk.key -n harbor`
 
@@ -54,7 +50,6 @@ Deploy / Reconfigure
 - If you are using an openstack instance (likely for development testing) use `dev_inventory/openstack.yml`
 - If you are using a production instance check the hostname in `prod_inventory/inventory.yml`
 - Run ansible playbook as follows: `ansible-playbook playbooks/deploy_docker_mirror.yml -i < inventory path >`
-
 
 E.g.
 `ansible-playbook playbooks/deploy_docker_mirror.yml -i dev_inventory/openstack.yml`
@@ -93,4 +88,3 @@ A separate docker registry is run in this compose, in addition to harbor. This i
 Other repositories including Harbor require a library name, for example `docker pull nginx/nginx` and will not fix-up on the user behalf. The current "supported way" of doing this in harbor is with an Nginx URL rewrite using Regex to fix-up the URL in transit. This is at best, hacky and could break.
 
 By deploying a separate Docker Registry component we can ensure that any weird quirks, like bare named pulls, are matched to upstream so that it "just works" for users. This is at the cost of additional disk space in the unlikely case that users mirror docker hub images into our harbor instance.
-
