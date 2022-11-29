@@ -53,6 +53,7 @@ Deploy / Reconfigure
 
 E.g.
 `ansible-playbook playbooks/deploy_docker_mirror.yml -i dev_inventory/openstack.yml`
+`ansible-playbook playbooks/deploy_harbor.yaml` 
 
 Reference Notes
 ===============
