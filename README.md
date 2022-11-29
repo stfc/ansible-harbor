@@ -18,6 +18,8 @@ Requirements
 - High available PostgreSQL database
 - High available Redis (Redis Sentinel) 
 - PVC that can be shared across nodes or external object storage
+- Install additional requirements 
+`ansible-galaxy install -r requirements.txt`
 
 Preparing to Deploy
 ===================
