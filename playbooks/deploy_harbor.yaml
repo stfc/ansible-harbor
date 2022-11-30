@@ -1,0 +1,27 @@
+- hosts: localhost # Kubectl is configured from this machine
+  roles:
+    - deploy_DB_longhorn
+    - deploy_harbor
+  vars:
+
+    # Helm chart versions
+    # https://github.com/goharbor/harbor/releases
+    harbor_version: "1.10.2" 
+    # https://github.com/longhorn/longhorn/releases
+    longhorn_version: "1.3.2"
+
+    # Name of harbor cluster 
+    harbor_cluster_name: harbor-cluster
+    
+    # K8s namespace
+    harbor_namespace: harbor
+    
+    # Helm name of the service
+    harbor_deployed_name: harbor
+
+    # Database name and IP
+    db_host_name: 
+    db_user_name: postgres
+
+    # Name of the secret created 
+    secret_name: secret-tls

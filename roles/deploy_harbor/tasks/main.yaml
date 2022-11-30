@@ -1,0 +1,40 @@
+# - name: Create Secret for Redis
+#   kubernetes.core.k8s:
+#     state: present
+#     definition: 
+#       apiVersion: v1
+#       kind: Secret
+#       type: Opaque             
+#       metadata:
+#         name: "{{ secret_name }}"
+#         namespace: "{{ harbor_namespace }}"     
+#       data:
+#         username: "{{ 'REDIS_PASSWORD' | b64encode }}"
+#         password: "{{ lookup('env', 'REDIS_PASSWORD') | b64encode }}"
+
+- name:  Template a file to /tmp/config.yaml
+  ansible.builtin.template:
+    src: "config.yaml.j2"
+    dest: "/tmp/config.yaml"
+
+- name: Add stable harbor helm chart repo
+  kubernetes.core.helm_repository:
+    name: harbor
+    repo_url: https://helm.goharbor.io
+
+- name: Create the harbor namespace
+  kubernetes.core.k8s:
+    name: "{{ harbor_namespace }}"
+    kind: Namespace
+    state: present
+
+- name: Deploy harbor
+  kubernetes.core.helm:
+    chart_ref: harbor/harbor
+    create_namespace: yes
+    update_repo_cache: yes
+    # Pulled from default
+    name: "{{ harbor_deployed_name }}"
+    release_namespace: "{{ harbor_namespace }}"
+    values_files:
+      - "/tmp/config.yaml"
