@@ -1,4 +1,0 @@
----
-# This reduces typing 
-harbor_unpack_dir: "/opt/harbor-online-installer-{{ harbor_version }}"
-harbor_installer_dir: "{{ harbor_unpack_dir }}/harbor"

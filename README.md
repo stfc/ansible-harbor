@@ -12,22 +12,24 @@ These are served via two configurable domain names, such as `docker.example.com`
 Requirements
 ============
 
-- Kubernetes cluster 1.10+ (can use Cluster API)
+- Existing Kubernetes cluster 
 - Helm 2.8.0+
-- Loadbalancers for Longhorn, Postgres, Kubernetes cluster and Harbor service
-- High available PostgreSQL database
-- High available Redis (Redis Sentinel) 
-- PVC that can be shared across nodes or external object storage
+- Loadbalancers support for Longhorn, Postgres, Kubernetes cluster and Harbor service
+- High available PostgreSQL database for prod
+- Storage class shared across nodes or external object storage
+
+Machine Requirements
+====================
+
+- Ansible installed
+- Create a venv and install python requirements:
+`python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt`
 - Install additional requirements 
-`ansible-galaxy install -r requirements.txt`
+`ansible-galaxy install -r requirements.yaml`
 
 Preparing to Deploy
 ===================
 
-- Create a virtual environment 
-`sudo apt install python3-venv`
-`python3 -m venv venv`
-`source venv/bin/activate`
 - In `roles/harbor_server/defaults/main` copy `secrets.yml.template` to `secrets.yml` and fill in as appropriate
 - In `playbooks/deploy_docker_mirror`, check the planned instance name and variables associated
 - Ensure that `defaults/main.yml` for the docker mirror role match the harbor role

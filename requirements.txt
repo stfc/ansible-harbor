@@ -1,4 +1,3 @@
-collections:
-  # K8s deps
-  - name: kubernetes.core
-  - name: community.kubernetes
+ansible
+psycopg2-binary
+kubernetes
