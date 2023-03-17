@@ -1,0 +1,15 @@
+- name: Print DB target IP
+  debug:
+    msg: "DB target IP: {{ ansible_default_ipv4.address }}"
+
+- name: Create a new databases
+  postgresql_db:
+    name: "{{ item }}"
+    state: present
+    login_host: "{{ ansible_default_ipv4.address }}"
+    login_user: "postgres"
+    login_password: "{{ postgres_password }}"
+  with_items:
+    - "registry"
+    - "notary_signer"
+    - "notary_server"

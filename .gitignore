@@ -1,6 +1,9 @@
-venv/
 log
 patch
 *secrets.yml
+*.password
 *.pem
+
+geerlingguy.postgresql/
+venv/
 .idea/

@@ -13,7 +13,6 @@ Requirements
 ============
 
 - Existing Kubernetes cluster 
-- Helm 2.8.0+
 - Loadbalancers support for Longhorn, Postgres, Kubernetes cluster and Harbor service
 - High available PostgreSQL database for prod
 - Storage class shared across nodes or external object storage
@@ -25,19 +24,13 @@ Machine Requirements
 - Create a venv and install python requirements:
 `python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt`
 - Install additional requirements 
-`ansible-galaxy install -r requirements.yaml`
+`ansible-galaxy install -r requirements.yml`
 
 Preparing to Deploy
 ===================
 
-- In `roles/harbor_server/defaults/main` copy `secrets.yml.template` to `secrets.yml` and fill in as appropriate
-- In `playbooks/deploy_docker_mirror`, check the planned instance name and variables associated
-- Ensure that `defaults/main.yml` for the docker mirror role match the harbor role
-- If you want a volume for Harbor mount `/harbor_data` using `/etc/fstab` before deploying
-- Decide if SSL termination will be done upstream and set the var in the playbook as appropriate.
-- If you are using a docker hub token, create a file at `/opt/nginx/docker-mirror.env` with `REGISTRY_PROXY_USERNAME` set to the username and `REGISTRY_PROXY_PASSWORD` set to the access token.
-- If you are using postrgres in Kubernetes: 
-`export DB_PASSWORD=$(kubectl get secret --namespace default postgres-db-2-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) ` 
+- If you are setting up a new machine, edit `inventory.yml` and add the host to relevant environment.
+- Set the various passwords you expect to use in the environment. These are used to configure the various components:
 `export DB_PASSWORD=<your DB password>`
 `export REDIS_PASSWORD=<your REDIS password>`
 

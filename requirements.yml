@@ -1,0 +1,8 @@
+roles:
+  # Dev DB management
+  - name: geerlingguy.postgresql
+
+collections:
+  - name: community.kubernetes
+  - name: community.postgresql
+  - name: kubernetes.core

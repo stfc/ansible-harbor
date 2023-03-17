@@ -1,0 +1,2 @@
+redis_password: "{{ lookup('password', inventory_dir + '/credentials/dev-redis.password length=32 chars=ascii_letters,digits') }}"
+postgres_password: "{{ lookup('password', inventory_dir + '/credentials/dev-postgres.password length=32 chars=ascii_letters,digits') }}"
