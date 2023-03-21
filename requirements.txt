@@ -1,3 +1,0 @@
-ansible
-psycopg2-binary
-kubernetes

@@ -1,0 +1,5 @@
+redis_chart_version: "17.8.5"
+
+# Helm chart versions
+# https://github.com/goharbor/harbor/releases
+harbor_version: "1.10.17"

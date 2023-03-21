@@ -1,2 +1,16 @@
+ingress_external_ip: "130.246.211.223"
+harbor_domain: test.harbor.stfc.ac.uk
+harbor_username: harbor_user
+postgres_username: postgres
+
+# The name of the OpenStack cloud to use
+cloud_name: openstack
+
+# Auto generated vars
+
 redis_password: "{{ lookup('password', inventory_dir + '/credentials/dev-redis.password length=32 chars=ascii_letters,digits') }}"
 postgres_password: "{{ lookup('password', inventory_dir + '/credentials/dev-postgres.password length=32 chars=ascii_letters,digits') }}"
+
+harbor_admin_password: "{{ lookup('password', inventory_dir + '/credentials/dev-harbor.password length=32 chars=ascii_letters,digits') }}"
+harbor_secret_key: "{{ lookup('password', inventory_dir + '/credentials/dev-harbor-secret-key length=32 chars=ascii_letters,digits') }}"
+harbor_user_password: "{{ lookup('password', inventory_dir + '/credentials/dev-harbor-user-password length=32 chars=ascii_letters,digits') }}"

@@ -4,6 +4,7 @@ patch
 *.password
 *.pem
 
+credentials/
 geerlingguy.postgresql/
 venv/
 .idea/

@@ -1,0 +1,37 @@
+# Deploy DB for dev grouped images only
+- hosts: dev
+  tags: db
+  vars_files:
+    - vars/dev-db.yml
+  roles:
+    - role: geerlingguy.postgresql
+      become: true
+
+- hosts: all
+  tags: db
+  roles:
+    - db_prep
+
+- hosts: all
+  tags: redis
+  vars_files:
+    - vars/global.yml
+    - vars/versions.yml
+  roles:
+    - redis_chart
+
+- hosts: all
+  tags: ingress
+  vars_files:
+    - vars/global.yml
+    - vars/versions.yml
+  roles:
+    - ingress
+
+- hosts: all
+  tags: harbor
+  vars_files:
+    - vars/global.yml
+    - vars/versions.yml
+  roles:
+    - deploy_harbor

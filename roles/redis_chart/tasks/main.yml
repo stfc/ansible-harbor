@@ -1,0 +1,15 @@
+- name: Add bitnami redis helm chart repo
+  kubernetes.core.helm_repository:
+    name: bitnami
+    repo_url: https://charts.bitnami.com/bitnami
+
+- name: Deploy redis chart
+  kubernetes.core.helm:
+    chart_ref: bitnami/redis
+    create_namespace: yes
+    update_repo_cache: yes
+    name: redis
+    release_namespace: "{{ harbor_namespace }}"
+    values:
+      auth.password: "{{ redis_password }}"
+      sentinel.enabled: true

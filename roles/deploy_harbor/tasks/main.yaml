@@ -1,21 +1,27 @@
-# - name: Create Secret for Redis
-#   kubernetes.core.k8s:
-#     state: present
-#     definition: 
-#       apiVersion: v1
-#       kind: Secret
-#       type: Opaque             
-#       metadata:
-#         name: "{{ secret_name }}"
-#         namespace: "{{ harbor_namespace }}"     
-#       data:
-#         username: "{{ 'REDIS_PASSWORD' | b64encode }}"
-#         password: "{{ lookup('env', 'REDIS_PASSWORD') | b64encode }}"
+- name: Install pip package manager on remote node
+  package:
+    name: python3-pip
+    state: present
+  become: true
 
-- name:  Template a file to /tmp/config.yaml
-  ansible.builtin.template:
-    src: "config.yaml.j2"
-    dest: "/tmp/config.yaml"
+- name: Install pre-requisites on remote node for K8s ops
+  pip:
+    name:
+      - openshift
+      - pyyaml
+      - kubernetes
+
+- name: Get redis service cluster ip
+  kubernetes.core.k8s_info:
+    kind: Service
+    name: redis-master
+    namespace: "{{ harbor_namespace }}"
+  register: redis_service
+
+- name: Check redis service IP
+  fail:
+    msg: "Redis service IP not found"
+  when: redis_service.resources[0].spec.clusterIP is not defined
 
 - name: Add stable harbor helm chart repo
   kubernetes.core.helm_repository:
@@ -28,13 +34,23 @@
     kind: Namespace
     state: present
 
+- name: Read in Openstack auth credentials
+  include_vars:
+    file: "{{ inventory_dir + '/credentials/clouds.yaml' }}"
+    name: openstack_credentials
+
 - name: Deploy harbor
   kubernetes.core.helm:
     chart_ref: harbor/harbor
     create_namespace: yes
     update_repo_cache: yes
     # Pulled from default
-    name: "{{ harbor_deployed_name }}"
+    name: "harbor"
     release_namespace: "{{ harbor_namespace }}"
-    values_files:
-      - "/tmp/config.yaml"
+    values:
+      expose:
+        type: ingress
+        tls:
+          enabled: true
+          certSource: "auto"
+          commonName: "{{ harbor_domain }}"
